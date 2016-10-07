@@ -3,7 +3,7 @@
 namespace Shrink0r\SuffixTree\Builder;
 
 use Shrink0r\SuffixTree\Builder\NodeTrait;
-use Shrink0r\SuffixTree\Builder\TreeBuilder;
+use Shrink0r\SuffixTree\Builder\SuffixTreeBuilder;
 use Shrink0r\SuffixTree\NodeInterface;
 
 final class LeafNode implements NodeInterface
@@ -15,7 +15,7 @@ final class LeafNode implements NodeInterface
 
     private $builder;
 
-    public function __construct(int $start, TreeBuilder $builder)
+    public function __construct(int $start, SuffixTreeBuilder $builder)
     {
         $this->builder = $builder;
         $this->start = $start;

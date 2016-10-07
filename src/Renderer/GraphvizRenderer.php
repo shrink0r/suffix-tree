@@ -20,20 +20,6 @@ final class GraphvizRenderer
         );
     }
 
-    private function collectNodes(NodeInterface $node, array $visited_nodes)
-    {
-        if (in_array($node, $visited_nodes, true)) {
-            return $visited_nodes;
-        }
-
-        $visited_nodes[] = $node;
-        foreach ($node->getChildren() as $child) {
-            $visited_nodes = $this->collectNodes($child, $visited_nodes);
-        }
-
-        return $visited_nodes;
-    }
-
     private function renderNodes(RootNode $root)
     {
         $dot_nodes = [];
@@ -60,6 +46,20 @@ final class GraphvizRenderer
         }
 
         return [ $dot_nodes, $node_map ];
+    }
+
+    private function collectNodes(NodeInterface $node, array $visited_nodes)
+    {
+        if (in_array($node, $visited_nodes, true)) {
+            return $visited_nodes;
+        }
+
+        $visited_nodes[] = $node;
+        foreach ($node->getChildren() as $child) {
+            $visited_nodes = $this->collectNodes($child, $visited_nodes);
+        }
+
+        return $visited_nodes;
     }
 
     private function renderEdges(SuffixTree $tree, array $node_map)

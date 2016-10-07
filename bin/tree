@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Shrink0r\SuffixTree\Builder\TreeBuilder;
+use Shrink0r\SuffixTree\Builder\SuffixTreeBuilder;
 use Shrink0r\SuffixTree\Renderer\GraphvizRenderer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -9,7 +9,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 if (count($argv) < 2) {
     return;
 }
-$tree_builder = new TreeBuilder($argv[1]);
+$tree_builder = new SuffixTreeBuilder($argv[1]);
 $suffix_tree = $tree_builder->build();
 $longest_repeated_substring = $suffix_tree->findLongestRepetition();
 

@@ -11,7 +11,7 @@ use Shrink0r\SuffixTree\LeafNode as Leaf;
 use Shrink0r\SuffixTree\InternalNode as Internal;
 use Shrink0r\SuffixTree\RootNode as Root;
 
-final class TreeBuilder
+final class SuffixTreeBuilder
 {
     // active-point state
     private $active_edge = -1;

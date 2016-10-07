@@ -20,12 +20,12 @@ final class SuffixTree
 
     public function hasSubstring(string $substring): bool
     {
-        return $this->matchPath($this->getRoot(), $substring, -1) !== -1;
+        return $this->matchSuffixPath($this->getRoot(), $substring, -1) !== -1;
     }
 
     public function hasSuffix(string $suffix): bool
     {
-        return $this->matchPath($this->getRoot(), $suffix, -1) === 2;
+        return $this->matchSuffixPath($this->getRoot(), $suffix, -1) === 2;
     }
 
     public function findLongestRepetition(): string
@@ -53,10 +53,10 @@ final class SuffixTree
         return $this->length;
     }
 
-    private function matchPath(NodeInterface $node, string $path, int $idx): int
+    private function matchSuffixPath(NodeInterface $node, string $path, int $idx): int
     {
         $match_result = -1;
-        if ($node->getStart() !== -1) {
+        if (!$node instanceof RootNode) {
             $match_result = $this->walkEdge($path, $idx, $node->getStart(), $node->getEnd());
             if ($match_result !== 0) {
                 return $match_result;
@@ -66,13 +66,13 @@ final class SuffixTree
         $idx = $idx + $node->getEdgeSize();
         $children = $node->getChildren();
         if (isset($children[$path[$idx]])) {
-            return $this->matchPath($children[$path[$idx]], $path, $idx);
+            return $this->matchSuffixPath($children[$path[$idx]], $path, $idx);
         } else {
-            return -1;  // no match
+            return -1;
         }
     }
 
-    // return -1 = 'no match', 0 = 'more edges', 1 = 'edge-match', 2 = 'leaf-match'
+    // return -1 = 'fell-off', 0 = 'not-finished', 1 = 'partial-match', 2 = 'full-match'
     private function walkEdge(string $s, int $idx, int $start, int $end): int
     {
         $text = $this->getS();
@@ -82,7 +82,7 @@ final class SuffixTree
             }
         }
         if (strlen($s) === $idx) {
-            return ($k <= $end) ? 1 : 2;
+            return $k > $end ? 2 : 1;
         }
         return 0;
     }
