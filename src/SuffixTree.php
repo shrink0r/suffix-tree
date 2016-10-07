@@ -10,6 +10,7 @@ final class SuffixTree
     private $S;
     private $root;
     private $length;
+    private $longest_repetiton;
 
     public function __construct(RootNode $root, string $S)
     {
@@ -30,12 +31,15 @@ final class SuffixTree
 
     public function findLongestRepetition(): string
     {
-        list($node_depth, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
-
-        if ($substring_start - $node_depth > 0) {
-            return substr($this->getS(), $substring_start, $node_depth);
+        if ($this->longest_repetiton === null) {
+            list($node_depth, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
+            if ($substring_start - $node_depth > 0) {
+                $this->longest_repetiton = substr($this->getS(), $substring_start, $node_depth);
+            } else {
+                $this->longest_repetiton = '';
+            }
         }
-        return '';
+        return $this->longest_repetiton;
     }
 
     public function getRoot()
