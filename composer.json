@@ -1,0 +1,12 @@
+{
+    "name": "shrink0r/suffix-tree",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Shrink0r\\SuffixTree\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0"
+    }
+}
