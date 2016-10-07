@@ -118,21 +118,21 @@ final class SuffixTreeBuilder
                 $this->active_length--;
                 $this->active_edge = $i - $this->suffixes_to_add + 1;
             } else if ($this->active_node !== $this->root) {
-                $this->active_node = $this->active_node->suffix_link;
+                $this->active_node = $this->active_node->suffix_link ?: $this->root;
             }
         }
     }
 
-    private function skipCountEdge(NodeInterface $currNode): bool
+    private function skipCountEdge(NodeInterface $node): bool
     {
         // skip-count-trick:
         // skip nodes with a label-size smaller than active-length,
         // then adjust active-length relative to the next node.
-        $edge_size = $currNode->getEdgeSize();
+        $edge_size = $node->getEdgeSize();
         if ($this->active_length >= $edge_size) {
             $this->active_edge += $edge_size;
             $this->active_length -= $edge_size;
-            $this->active_node = $currNode;
+            $this->active_node = $node;
 
             return true;
         }
