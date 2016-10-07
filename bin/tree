@@ -13,14 +13,16 @@ $tree_builder = new SuffixTreeBuilder($argv[1]);
 $suffix_tree = $tree_builder->build();
 $longest_repeated_substring = $suffix_tree->findLongestRepetition();
 
+echo "// Input: $argv[1]\n";
+
 if (empty($longest_repeated_substring)) {
-    echo "No repeated substrings found.\n";
+    echo "// No repeated substrings found.\n";
 } else {
-    echo "Longest repeated substring is: $longest_repeated_substring\n";
+    echo "// Longest repeated substring is: $longest_repeated_substring\n";
 }
 
 if (count($argv) >= 3) {
-    echo "Has substring: " . ($suffix_tree->hasSubString($argv[2]) ? 'true' : 'false') . PHP_EOL;
-    echo "Has suffix: " . ($suffix_tree->hasSuffix($argv[2]) ? 'true' : 'false') . PHP_EOL;
+    echo "// Has substring: " . ($suffix_tree->hasSubString($argv[2]) ? 'true' : 'false') . PHP_EOL;
+    echo "// Has suffix: " . ($suffix_tree->hasSuffix($argv[2]) ? 'true' : 'false') . PHP_EOL;
 }
-echo "Graphviz representation: \n" . (new GraphvizRenderer)->render($suffix_tree, $argv[1]) . PHP_EOL;
+echo "// Graphviz representation: \n" . (new GraphvizRenderer)->render($suffix_tree, $argv[1]) . PHP_EOL;
