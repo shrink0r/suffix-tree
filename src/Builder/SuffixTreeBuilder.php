@@ -47,7 +47,8 @@ final class SuffixTreeBuilder
         }
 
         $suffix_link_map = [];
-        $children = $this->buildFixSubtrees($this->root, $suffix_link_map);
+        $node_map = [];
+        $children = $this->buildFixSubtrees($this->root, $node_map, $suffix_link_map);
         $root = new Root($this->root->start, $this->root->end, $children);
 
         return new SuffixTree($root, $this->S);
@@ -140,7 +141,7 @@ final class SuffixTreeBuilder
         return false;
     }
 
-    private function buildFixSubtrees(NodeInterface $node, array &$suffix_link_map, int $path_size = 0)
+    private function buildFixSubtrees(NodeInterface $node, array &$node_map, array &$lazy_links, int $path_size = 0)
     {
         $children = [];
         foreach ($node->children as $edge => $child_node) {
@@ -154,7 +155,8 @@ final class SuffixTreeBuilder
             } else { // InternalNode
                 $grand_children = $this->buildFixSubtrees(
                     $child_node,
-                    $suffix_link_map,
+                    $node_map,
+                    $lazy_links,
                     $path_size + $child_node->getEdgeSize()
                 );
                 $children[$edge] = new Internal(
@@ -164,14 +166,19 @@ final class SuffixTreeBuilder
                     -1
                 );
                 if ($child_node->suffix_link) {
-                    $suffix_link_map[(string)$child_node->suffix_link] = $children[$edge];
+                    if (isset($node_map[(string)$child_node->suffix_link])) {
+                        $children[$edge]->withSuffixLink($node_map[(string)$child_node->suffix_link]);
+                    } else {
+                        $lazy_links[(string)$child_node->suffix_link] = $children[$edge];
+                    }
                 }
-                if (isset($suffix_link_map[(string)$child_node])) {
+                if (isset($lazy_links[(string)$child_node])) {
                     // todo: find out way to prevent mutating node state here, need to get the new node ref
                     // into the proper place within the new tree
-                    $suffix_link_map[(string)$child_node]->withSuffixLink($children[$edge]);
+                    $lazy_links[(string)$child_node]->withSuffixLink($children[$edge]);
                 }
             }
+            $node_map[(string)$child_node] = $children[$edge];
         }
 
         return $children;
