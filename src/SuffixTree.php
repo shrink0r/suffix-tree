@@ -53,35 +53,35 @@ final class SuffixTree
         return $this->length;
     }
 
-    private function matchSuffixPath(NodeInterface $node, string $path, int $idx): int
+    private function matchSuffixPath(NodeInterface $node, string $path, int $i): int
     {
         $match_result = -1;
         if (!$node instanceof RootNode) {
-            $match_result = $this->walkEdge($path, $idx, $node->getStart(), $node->getEnd());
+            $match_result = $this->walkEdge($path, $i, $node->getStart(), $node->getEnd());
             if ($match_result !== 0) {
                 return $match_result;
             }
         }
 
-        $idx = $idx + $node->getEdgeSize();
+        $i = $i + $node->getEdgeSize();
         $children = $node->getChildren();
-        if (isset($children[$path[$idx]])) {
-            return $this->matchSuffixPath($children[$path[$idx]], $path, $idx);
+        if (isset($children[$path[$i]])) {
+            return $this->matchSuffixPath($children[$path[$i]], $path, $i);
         } else {
             return -1;
         }
     }
 
     // return -1 = 'fell-off', 0 = 'not-finished', 1 = 'partial-match', 2 = 'full-match'
-    private function walkEdge(string $s, int $idx, int $start, int $end): int
+    private function walkEdge(string $s, int $i, int $start, int $end): int
     {
         $text = $this->getS();
-        for ($k = $start; $k <= $end && $idx < strlen($s); $k++, $idx++) {
-            if ($text{$k} !== $s{$idx}) {
+        for ($k = $start; $k <= $end && $i < strlen($s); $k++, $i++) {
+            if ($text{$k} !== $s{$i}) {
                 return -1;
             }
         }
-        if (strlen($s) === $idx) {
+        if (strlen($s) === $i) {
             return $k > $end ? 2 : 1;
         }
         return 0;
