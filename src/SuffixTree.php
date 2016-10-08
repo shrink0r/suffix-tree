@@ -62,7 +62,7 @@ final class SuffixTree
     {
         if ($this->longest_repetiton === null) {
             list($node_depth, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
-            $this->longest_repetiton = substr($this->getS(), $substring_start, $node_depth);
+            $this->longest_repetiton = substr($this->getS(), $substring_start - 1, $node_depth);
         }
         return $this->longest_repetiton;
     }
@@ -160,7 +160,7 @@ final class SuffixTree
             }
         } elseif ($node->getSuffixIdx() > -1 && ($max_depth < $path_size - $node->getEdgeSize()) ) {
             $max_depth = $path_size - $node->getEdgeSize();
-            $start_pos = $node->getSuffixIdx() - 1;
+            $start_pos = $node->getSuffixIdx();
         }
 
         return [ $max_depth, $start_pos ];
