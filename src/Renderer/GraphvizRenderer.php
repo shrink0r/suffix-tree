@@ -10,33 +10,41 @@ use Shrink0r\SuffixTree\SuffixTree;
 
 final class GraphvizRenderer implements SuffixTreeRendererInterface
 {
+    // basic graph layout
+    const GRAPH_TPL = "digraph \"suffix-tree\" {\n\t%s\n\n\t%s\n}";
+
+    // node styles
     const NODE_PROPS = 'label="%s" fontname="Arial" fontcolor="#000000" color="#7f8c8d"';
-
     const LEAF_PROPS = 'shape="circle" width="0.45" fixedsize="true" fontsize="8"';
-
     const ROOT_PROPS = 'shape="point" width="0.1" fontsize="0.3" fontsize="8"';
+    const INTERNAL_PROPS = 'shape="circle" width="0.2" fillcolor="#ecf0f1" style="filled"';
 
-    const INTERNAL_PROPS = 'shape="circle" width="0.2" fillcolor="#ecf0f1" style="filled" ';
-
+    // edge styles
     const BASE_EDGE_PROPS = 'label="%s" fontname="Arial" fontcolor="#000000"';
-
     const EDGE_PROPS = 'fontsize="12" color="#7f8c8d"';
-
     const SUFFIX_LINK_PROPS = 'arrowhead="vee" arrowsize="0.7" style="dashed" fontsize="8" color="#2980b9"';
 
     public function render(SuffixTree $tree)
     {
         $node_map = [];
-        $rendered_nodes = [];
+
+        $nodes = [];
         foreach ($this->collectNodes($tree->getRoot(), []) as $node_id => $node) {
-            $rendered_nodes[] = $this->renderNode($node, $node_id);
+            $nodes[] = $this->renderNode($node, $node_id);
             $node_map[$node_id] = $node;
         }
 
-        $nodes = implode("\n    ", $rendered_nodes);
-        $edges = $this->renderEdges($tree, $node_map);
+        $edges = [];
+        foreach ($node_map as $id => $node) {
+            foreach ($node->getChildren() as $child) {
+                $edges[] = $this->renderEdge($node, $child, $node_map, $tree->getS());
+            }
+            if ($node->getSuffixLink() !== null && $node->getSuffixLink() !== $tree->getRoot()) {
+                $edges[] = $this->renderSuffixLink($node, $node_map);
+            }
+        }
 
-        return sprintf("digraph \"suffix-tree\" {\n    %s\n\n    %s\n}", $nodes, $edges);
+        return sprintf(self::GRAPH_TPL, implode("\n\t", $nodes), implode("\n\t", $edges));
     }
 
     private function renderNode(NodeInterface $node, int $node_id): string
