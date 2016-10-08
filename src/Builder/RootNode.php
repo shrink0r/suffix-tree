@@ -9,9 +9,17 @@ final class RootNode implements NodeInterface
 {
     use NodeTrait;
 
+    /**
+     * @var NodeInterface[] $children
+     */
     public $children = [];
 
-    public function __get($property)
+    /**
+     * @param string $property
+     *
+     * @return mixed
+     */
+    public function __get(string $property)
     {
         if ($property === 'end') {
             return -1;

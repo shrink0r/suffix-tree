@@ -2,45 +2,81 @@
 
 namespace Shrink0r\SuffixTree\Builder;
 
+use Shrink0r\SuffixTree\Builder\BuilderInterface;
 use Shrink0r\SuffixTree\Builder\InternalNode;
 use Shrink0r\SuffixTree\Builder\LeafNode;
 use Shrink0r\SuffixTree\Builder\RootNode;
-use Shrink0r\SuffixTree\NodeInterface;
-use Shrink0r\SuffixTree\SuffixTree;
-use Shrink0r\SuffixTree\LeafNode as Leaf;
 use Shrink0r\SuffixTree\InternalNode as Internal;
+use Shrink0r\SuffixTree\LeafNode as Leaf;
+use Shrink0r\SuffixTree\NodeInterface;
 use Shrink0r\SuffixTree\RootNode as Root;
+use Shrink0r\SuffixTree\SuffixTree;
 
-final class SuffixTreeBuilder
+final class SuffixTreeBuilder implements BuilderInterface
 {
     // active-point state
+    /**
+     * @var int $active_edge
+     */
     private $active_edge = -1;
+    /**
+     * @var int $active_length
+     */
     private $active_length = 0;
+    /**
+     * @var NodeInterface $active_node
+     */
     private $active_node;
-    // is used to update all leafs, when applying rule nr. 1
+    /**
+     * is used to update all leafs, when applying rule 1
+     * @var int $leaf_pos
+     */
     private $leaf_pos = -1;
-    // length of our input S
+    /**
+     * length of our input S
+     * @var int $length
+     */
     private $length;
-    // previously created internal-node
+    /**
+     * previously created internal-node
+     * @var NodeInterface $active_node
+     */
     private $prev_int_node;
-    // the tree's root-node
+    /**
+     * the tree's root-node
+     * @var RootNode $root
+     */
     private $root;
-    // position at which we split an active-edge when applying rule nr. 2
+    /**
+     * position at which we split an active-edge when creating a new internal node (applying rule 2)
+     * @var integer $split_pos
+     */
     private $split_pos = -1;
-    // holds the number of (atm implicit)extension-suffixes pending to be added
+    /**
+     * holds the number of (atm implicit)extension-suffixes pending to be added
+     * @var integer $suffixes_to_add
+     */
     private $suffixes_to_add = 0;
-    // holds the input string
+    /**
+     * holds the input string
+     * @var string $S
+     */
     private $S;
 
-    public function __construct(string $S)
+    /**
+     * @return SuffixTree
+     */
+    public function build(string $S): SuffixTree
     {
         $this->S = $S;
         $this->length = strlen($S);
         $this->root = new RootNode;
-    }
+        $this->suffixes_to_add = 0;
+        $this->active_length = 0;
+        $this->split_pos = -1;
+        $this->leaf_pos = -1;
+        $this->active_edge = -1;
 
-    public function build()
-    {
         $this->active_node = $this->root;
         for ($i = 0; $i < $this->length; $i++) {
             $this->appendSuffix($i);
@@ -54,25 +90,33 @@ final class SuffixTreeBuilder
         return new SuffixTree($root, $this->S);
     }
 
-    public function getLeafPos()
+    /**
+     * @return int
+     */
+    public function getLeafPos(): int
     {
         return $this->leaf_pos;
     }
 
+    /**
+     * @param int $i
+     */
     private function appendSuffix(int $i)
     {
         // initialize phase state
         $this->prev_int_node = null;
         $this->suffixes_to_add++;
-        // extension rule nr. 1: append suffix($i) to leaf nodes
+        // -> extension rule 1 <-
+        // append suffix($i) to leaf nodes
         $this->leaf_pos = $i;
-        // add remaining suffixes to tree by applying extension rules nr. 2 and 3
+        // add remaining suffixes to tree by applying extension rules 2 and 3
         while ($this->suffixes_to_add > 0) {
             if ($this->active_length === 0) {
                 $this->active_edge = $i;
             }
             if (!isset($this->active_node->children[$this->S{$this->active_edge}])) {
-                // extension rule nr. 2: current suffix is not yet in tree
+                // -> extension rule 2 <-
+                // current suffix is not yet in tree
                 // so create new leaf node for current (final) extension-suffix
                 $this->active_node->children[$this->S{$this->active_edge}] = new LeafNode($i, $this);
                 // create a suffix-link from internal-node of previous extension to root
@@ -87,8 +131,8 @@ final class SuffixTreeBuilder
                     continue;
                 }
                 if ($this->S{$next->start + $this->active_length} === $this->S{$i}) {
-                    // extension rule nr- 3: current suffix is already in tree
-                    // do nothing and end current phase after adding suffix links
+                    // -> extension rule 3 <-
+                    // current suffix is already in tree; do nothing and end current phase after adding suffix-link
                     if ($this->prev_int_node !== null && $this->active_node !== $this->root) {
                         $this->prev_int_node->suffix_link = $this->active_node;
                         $this->prev_int_node = null;
@@ -96,6 +140,7 @@ final class SuffixTreeBuilder
                     $this->active_length++;
                     break;
                 }
+                // -> extension rule 2 <-
                 // we fell off the tree, so we need to split the edge at the "fall off position"
                 $this->split_pos = $next->start + $this->active_length - 1;
                 // insert a new edge(internal-node), that ends at the "fall off pos" in order to split the active-edge
@@ -124,6 +169,11 @@ final class SuffixTreeBuilder
         }
     }
 
+    /**
+     * @param NodeInterface $node
+     *
+     * @return bool
+     */
     private function skipCountEdge(NodeInterface $node): bool
     {
         // skip-count-trick:
@@ -141,8 +191,20 @@ final class SuffixTreeBuilder
         return false;
     }
 
-    private function buildFixSubtrees(NodeInterface $node, array &$node_map, array &$lazy_links, int $path_size = 0)
-    {
+    /**
+     * @param NodeInterface $node
+     * @param array $node_map
+     * @param array $lazy_links
+     * @param int $path_size
+     *
+     * @return NodeInterface[]
+     */
+    private function buildFixSubtrees(
+        NodeInterface $node,
+        array &$node_map,
+        array &$lazy_links,
+        int $path_size = 0
+    ): array {
         $children = [];
         foreach ($node->children as $edge => $child_node) {
             if ($child_node instanceof LeafNode) {

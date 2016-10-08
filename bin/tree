@@ -9,8 +9,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 if (count($argv) < 2) {
     return;
 }
-$tree_builder = new SuffixTreeBuilder($argv[1]);
-$suffix_tree = $tree_builder->build();
+$suffix_tree = (new SuffixTreeBuilder)->build($argv[1]);
 $longest_repeated_substring = $suffix_tree->findLongestRepetition();
 
 echo "// Input: $argv[1]\n";

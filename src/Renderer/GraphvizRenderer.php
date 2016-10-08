@@ -24,7 +24,12 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
     const EDGE_PROPS = 'fontsize="12" color="#7f8c8d"';
     const SUFFIX_LINK_PROPS = 'arrowhead="vee" arrowsize="0.7" style="dashed" fontsize="8" color="#2980b9"';
 
-    public function render(SuffixTree $tree)
+    /**
+     * @param SuffixTree $tree
+     *
+     * @return string
+     */
+    public function render(SuffixTree $tree): string
     {
         $node_map = [];
 
@@ -47,6 +52,12 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         return sprintf(self::GRAPH_TPL, implode("\n\t", $nodes), implode("\n\t", $edges));
     }
 
+    /**
+     * @param NodeInterface $node
+     * @param int $node_id
+     *
+     * @return string
+     */
     private function renderNode(NodeInterface $node, int $node_id): string
     {
         if ($node instanceof LeafNode) {
@@ -57,6 +68,12 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         return $this->renderInternalNode($node, $node_id);
     }
 
+    /**
+     * @param NodeInterface $node
+     * @param array $visited_nodes
+     *
+     * @return NodeInterface[]
+     */
     private function collectNodes(NodeInterface $node, array $visited_nodes): array
     {
         if (in_array($node, $visited_nodes, true)) {
@@ -71,21 +88,45 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         return $visited_nodes;
     }
 
+    /**
+     * @param LeafNode $leaf
+     * @param int $node_id
+     *
+     * @return string
+     */
     private function renderLeafNode(LeafNode $leaf, int $node_id): string
     {
         return sprintf('%s [ '.self::NODE_PROPS.' '.self::LEAF_PROPS.' ];', $node_id, $leaf->getSuffixIdx());
     }
 
+    /**
+     * @param RootNode $root
+     * @param int $node_id
+     *
+     * @return string
+     */
     private function renderRootNode(RootNode $root, int $node_id): string
     {
         return sprintf('%s [ '.self::NODE_PROPS.' '.self::ROOT_PROPS.' ];', $node_id, 'root');
     }
 
+    /**
+     * @param InternalNode $internal_node
+     * @param int $node_id
+     *
+     * @return string
+     */
     private function renderInternalNode(InternalNode $internal_node, int $node_id): string
     {
         return sprintf('%s [ '.self::NODE_PROPS.' '.self::INTERNAL_PROPS.' ];', $node_id, '');
     }
 
+    /**
+     * @param SuffixTree $tree
+     * @param array $node_map
+     *
+     * @return string
+     */
     private function renderEdges(SuffixTree $tree, array $node_map): string
     {
         $rendered_edges = [];
@@ -101,6 +142,14 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         return implode(PHP_EOL, $rendered_edges);
     }
 
+    /**
+     * @param NodeInterface $node
+     * @param NodeInterface $child
+     * @param array $node_map
+     * @param string $S
+     *
+     * @return string
+     */
     private function renderEdge(NodeInterface $node, NodeInterface $child, array $node_map, string $S): string
     {
         return sprintf(
@@ -111,6 +160,12 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         );
     }
 
+    /**
+     * @param NodeInterface $node
+     * @param array $node_map
+     *
+     * @return string
+     */
     private function renderSuffixLink(NodeInterface $node, array $node_map): string
     {
         return sprintf(

@@ -7,11 +7,27 @@ use Shrink0r\SuffixTree\RootNode;
 
 final class SuffixTree
 {
+    /**
+     * @var string $S
+     */
     private $S;
+    /**
+     * @var RootNode $root
+     */
     private $root;
+    /**
+     * @var int $length
+     */
     private $length;
+    /**
+     * @var string $longest_repetiton
+     */
     private $longest_repetiton;
 
+    /**
+     * @param RootNode $root
+     * @param string $S
+     */
     public function __construct(RootNode $root, string $S)
     {
         $this->S = $S;
@@ -19,16 +35,29 @@ final class SuffixTree
         $this->length = strlen($this->S);
     }
 
+    /**
+     * @param  string $substring
+     *
+     * @return bool
+     */
     public function hasSubstring(string $substring): bool
     {
         return $this->matchSuffixPath($this->getRoot(), $substring, -1) !== -1;
     }
 
+    /**
+     * @param  string $suffix
+     *
+     * @return bool
+     */
     public function hasSuffix(string $suffix): bool
     {
         return $this->matchSuffixPath($this->getRoot(), $suffix, -1) === 2;
     }
 
+    /**
+     * @return string
+     */
     public function findLongestRepetition(): string
     {
         if ($this->longest_repetiton === null) {
@@ -38,21 +67,37 @@ final class SuffixTree
         return $this->longest_repetiton;
     }
 
-    public function getRoot()
+    /**
+     * @return RootNode
+     */
+    public function getRoot(): RootNode
     {
         return $this->root;
     }
 
-    public function getS()
+    /**
+     * @return string
+     */
+    public function getS(): string
     {
         return $this->S;
     }
 
-    public function getLength()
+    /**
+     * @return int
+     */
+    public function getLength(): int
     {
         return $this->length;
     }
 
+    /**
+     * @param  NodeInterface $node
+     * @param  string $path
+     * @param  int $i
+     *
+     * @return int
+     */
     private function matchSuffixPath(NodeInterface $node, string $path, int $i): int
     {
         $match_result = -1;
@@ -72,7 +117,14 @@ final class SuffixTree
         }
     }
 
-    // return -1 = 'fell-off', 0 = 'not-finished', 1 = 'partial-match', 2 = 'full-match'
+    /**
+     * @param string $s
+     * @param int $i
+     * @param int $start
+     * @param int $end
+     *
+     * @return int -1 = 'fell-off', 0 = 'not-finished', 1 = 'partial-match', 2 = 'full-match'
+     */
     private function walkEdge(string $s, int $i, int $start, int $end): int
     {
         $text = $this->getS();
@@ -87,6 +139,14 @@ final class SuffixTree
         return 0;
     }
 
+    /**
+     * @param  NodeInterface $node
+     * @param  int $path_size
+     * @param  int $max_depth
+     * @param  int $start_pos
+     *
+     * @return int[] int tuple containing max_depth and start_pos
+     */
     private function dfsDeeptestInternalNode(NodeInterface $node, int $path_size, int $max_depth, int $start_pos): array
     {
         if ($node->getSuffixIdx() === -1) {

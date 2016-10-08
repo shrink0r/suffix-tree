@@ -6,5 +6,10 @@ use Shrink0r\SuffixTree\SuffixTree;
 
 interface SuffixTreeRendererInterface
 {
-    public function render(SuffixTree $tree);
+    /**
+     * @param  SuffixTree $tree
+     *
+     * @return string
+     */
+    public function render(SuffixTree $tree): string;
 }
