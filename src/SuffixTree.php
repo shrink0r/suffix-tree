@@ -33,11 +33,7 @@ final class SuffixTree
     {
         if ($this->longest_repetiton === null) {
             list($node_depth, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
-            if ($substring_start - $node_depth >= 0) {
-                $this->longest_repetiton = substr($this->getS(), $substring_start, $node_depth);
-            } else {
-                $this->longest_repetiton = '';
-            }
+            $this->longest_repetiton = substr($this->getS(), $substring_start, $node_depth);
         }
         return $this->longest_repetiton;
     }
