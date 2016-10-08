@@ -13,6 +13,9 @@ Please have a look at the [available releases](https://github.com/shrink0r/suffi
 ## Purpose
 
 Suffix-tree implementation using the ukonen algorithm.
+The code is based on these two articles found at [stackoverflow](http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english?answertab=oldest#tab-top)
+and [geeksforgeeks](http://www.geeksforgeeks.org/ukkonens-suffix-tree-construction-part-1/).
+
 
 ## Requirements and installation
 
