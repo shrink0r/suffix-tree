@@ -40,7 +40,7 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         }
 
         $edges = [];
-        foreach ($node_map as $id => $node) {
+        foreach ($node_map as $node) {
             foreach ($node->getChildren() as $child) {
                 $edges[] = $this->renderEdge($node, $child, $node_map, $tree->getS());
             }
@@ -63,9 +63,9 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         if ($node instanceof LeafNode) {
             return $this->renderLeafNode($node, $node_id);
         } elseif ($node instanceof RootNode) {
-            return $this->renderRootNode($node, $node_id);
+            return $this->renderRootNode($node_id);
         }
-        return $this->renderInternalNode($node, $node_id);
+        return $this->renderInternalNode($node_id);
     }
 
     /**
@@ -100,46 +100,23 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
     }
 
     /**
-     * @param RootNode $root
      * @param int $node_id
      *
      * @return string
      */
-    private function renderRootNode(RootNode $root, int $node_id): string
+    private function renderRootNode(int $node_id): string
     {
         return sprintf('%s [ '.self::NODE_PROPS.' '.self::ROOT_PROPS.' ];', $node_id, 'root');
     }
 
     /**
-     * @param InternalNode $internal_node
      * @param int $node_id
      *
      * @return string
      */
-    private function renderInternalNode(InternalNode $internal_node, int $node_id): string
+    private function renderInternalNode(int $node_id): string
     {
         return sprintf('%s [ '.self::NODE_PROPS.' '.self::INTERNAL_PROPS.' ];', $node_id, '');
-    }
-
-    /**
-     * @param SuffixTree $tree
-     * @param array $node_map
-     *
-     * @return string
-     */
-    private function renderEdges(SuffixTree $tree, array $node_map): string
-    {
-        $rendered_edges = [];
-        foreach ($node_map as $id => $node) {
-            foreach ($node->getChildren() as $child) {
-                $rendered_edges[] = $this->renderEdge($node, $child, $node_map, $tree->getS());
-            }
-            if ($node->getSuffixLink() !== null && $node->getSuffixLink() !== $tree->getRoot()) {
-                $rendered_edges[] = $this->renderSuffixLink($node, $node_map);
-            }
-        }
-
-        return implode(PHP_EOL, $rendered_edges);
     }
 
     /**

@@ -158,7 +158,7 @@ final class SuffixTree
                     $start_pos
                 );
             }
-        } elseif ($node->getSuffixIdx() > -1 && ($max_depth < $path_size - $node->getEdgeSize()) ) {
+        } elseif ($node->getSuffixIdx() > -1 && ($max_depth < $path_size - $node->getEdgeSize())) {
             $max_depth = $path_size - $node->getEdgeSize();
             $start_pos = $node->getSuffixIdx();
         }

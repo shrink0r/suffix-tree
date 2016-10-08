@@ -82,10 +82,8 @@ final class SuffixTreeBuilder implements BuilderInterface
             $this->appendSuffix($i);
         }
 
-        $suffix_link_map = [];
-        $node_map = [];
-        $children = $this->buildFixSubtrees($this->root, $node_map, $suffix_link_map);
-        $root = new Root($this->root->start, $this->root->end, $children);
+        $children = $this->buildFixSubtrees($this->root);
+        $root = new Root($children);
 
         return new SuffixTree($root, $this->S);
     }
@@ -163,7 +161,7 @@ final class SuffixTreeBuilder implements BuilderInterface
             if ($this->active_node === $this->root && $this->active_length > 0) {
                 $this->active_length--;
                 $this->active_edge = $i - $this->suffixes_to_add + 1;
-            } else if ($this->active_node !== $this->root) {
+            } elseif ($this->active_node !== $this->root) {
                 $this->active_node = $this->active_node->suffix_link ?: $this->root;
             }
         }
@@ -201,8 +199,8 @@ final class SuffixTreeBuilder implements BuilderInterface
      */
     private function buildFixSubtrees(
         NodeInterface $node,
-        array &$node_map,
-        array &$lazy_links,
+        array &$node_map = [],
+        array &$lazy_links = [],
         int $path_size = 0
     ): array {
         $children = [];
@@ -211,34 +209,32 @@ final class SuffixTreeBuilder implements BuilderInterface
                 $children[$edge] = new Leaf(
                     $child_node->start,
                     $child_node->end,
-                    [],
                     $this->length - ($path_size + $child_node->getEdgeSize()) + 1
                 );
-            } else { // InternalNode
-                $grand_children = $this->buildFixSubtrees(
-                    $child_node,
-                    $node_map,
-                    $lazy_links,
-                    $path_size + $child_node->getEdgeSize()
-                );
-                $children[$edge] = new Internal(
-                    $child_node->start,
-                    $child_node->end,
-                    $grand_children,
-                    -1
-                );
-                if ($child_node->suffix_link) {
-                    if (isset($node_map[(string)$child_node->suffix_link])) {
-                        $children[$edge]->withSuffixLink($node_map[(string)$child_node->suffix_link]);
-                    } else {
-                        $lazy_links[(string)$child_node->suffix_link] = $children[$edge];
-                    }
+                continue;
+            }
+            $grand_children = $this->buildFixSubtrees(
+                $child_node,
+                $node_map,
+                $lazy_links,
+                $path_size + $child_node->getEdgeSize()
+            );
+            $children[$edge] = new Internal(
+                $child_node->start,
+                $child_node->end,
+                $grand_children
+            );
+            if ($child_node->suffix_link) {
+                if (isset($node_map[(string)$child_node->suffix_link])) {
+                    $children[$edge]->withSuffixLink($node_map[(string)$child_node->suffix_link]);
+                } else {
+                    $lazy_links[(string)$child_node->suffix_link] = $children[$edge];
                 }
-                if (isset($lazy_links[(string)$child_node])) {
-                    // todo: find out way to prevent mutating node state here, need to get the new node ref
-                    // into the proper place within the new tree
-                    $lazy_links[(string)$child_node]->withSuffixLink($children[$edge]);
-                }
+            }
+            if (isset($lazy_links[(string)$child_node])) {
+                // todo: find out way to prevent mutating node state here, need to get the new node ref
+                // into the proper place within the new tree
+                $lazy_links[(string)$child_node]->withSuffixLink($children[$edge]);
             }
             $node_map[(string)$child_node] = $children[$edge];
         }
