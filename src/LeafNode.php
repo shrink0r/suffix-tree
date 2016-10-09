@@ -14,7 +14,7 @@ final class LeafNode implements NodeInterface
      * @param int $end
      * @param int $suffix_idx
      */
-    public function __construct(int $start, int $end, int $suffix_idx = -1)
+    public function __construct(int $start, int $end, int $suffix_idx)
     {
         $this->start = $start;
         $this->end = $end;

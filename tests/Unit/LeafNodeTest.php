@@ -9,7 +9,7 @@ class LeafNodeTest extends TestCase
 {
     protected function setUp()
     {
-        $this->leaf_node = new LeafNode(7, 8);
+        $this->leaf_node = new LeafNode(7, 8, 2);
     }
 
     public function testGetSuffixLink()
