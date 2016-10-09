@@ -82,10 +82,7 @@ final class SuffixTreeBuilder implements BuilderInterface
             $this->appendSuffix($i);
         }
 
-        $children = $this->buildFixSubtrees($this->root);
-        $root = new Root($children);
-
-        return new SuffixTree($root, $this->S);
+        return new SuffixTree(new Root($this->transferChildren($this->root)), $this->S);
     }
 
     /**
@@ -197,7 +194,7 @@ final class SuffixTreeBuilder implements BuilderInterface
      *
      * @return NodeInterface[]
      */
-    private function buildFixSubtrees(
+    private function transferChildren(
         NodeInterface $node,
         array &$node_map = [],
         array &$lazy_links = [],
@@ -213,7 +210,7 @@ final class SuffixTreeBuilder implements BuilderInterface
                 );
                 continue;
             }
-            $grand_children = $this->buildFixSubtrees(
+            $grand_children = $this->transferChildren(
                 $child_node,
                 $node_map,
                 $lazy_links,
