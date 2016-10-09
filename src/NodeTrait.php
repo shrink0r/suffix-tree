@@ -26,22 +26,6 @@ trait NodeTrait
     private $suffix_idx;
 
     /**
-     * @param int $start
-     * @param int $end
-     * @param array $children
-     * @param int $suffix_idx
-     * @param NodeInterface $suffix_link
-     */
-    public function __construct(int $start, int $end, array $children, int $suffix_idx = -1, $suffix_link = null)
-    {
-        $this->start = $start;
-        $this->end = $end;
-        $this->children = $children;
-        $this->suffix_idx = $suffix_idx;
-        $this->suffix_link = $suffix_link;
-    }
-
-    /**
      * @return int
      */
     public function getEdgeSize(): int
