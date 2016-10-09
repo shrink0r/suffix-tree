@@ -1,8 +1,8 @@
 {
     "name": "shrink0r/suffix-tree",
     "type": "library",
-    "description": "Ukonen suffix-tree in php.",
-    "keywords": [ "suffix-tree", "ukonen" ],
+    "description": "Suffix-tree (Ukkonen) for PHP.",
+    "keywords": [ "suffix-tree", "ukkonen" ],
     "homepage": "https://github.com/shrink0r/suffix-tree",
     "license": "MIT",
     "authors": [
