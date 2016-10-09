@@ -7,6 +7,8 @@ use Shrink0r\SuffixTree\Tests\Unit\TestCase;
 
 class LeafNodeTest extends TestCase
 {
+    private $leaf_node;
+
     protected function setUp()
     {
         $this->leaf_node = new LeafNode(7, 8, 2);

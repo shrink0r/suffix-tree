@@ -7,6 +7,8 @@ use Shrink0r\SuffixTree\Tests\Unit\TestCase;
 
 class RootNodeTest extends TestCase
 {
+    private $root_node;
+
     protected function setUp()
     {
         $this->root_node = new RootNode;

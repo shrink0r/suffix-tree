@@ -7,6 +7,8 @@ use Shrink0r\SuffixTree\Tests\Unit\TestCase;
 
 class InternalNodeTest extends TestCase
 {
+    private $internal_node;
+
     protected function setUp()
     {
         $this->internal_node = new InternalNode(3, 5);
