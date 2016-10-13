@@ -4,7 +4,7 @@
 [![License](https://poser.pugx.org/shrink0r/suffix-tree/license.svg)][10]
 [![Latest Unstable Version](https://poser.pugx.org/shrink0r/suffix-tree/v/unstable.svg)][1]
 [![Build Status](https://secure.travis-ci.org/shrink0r/suffix-tree.png)][2]
-[![Coverage Status](https://coveralls.io/repos/github/shrink0r/suffix-tree/badge.svg)][3]
+[![Coverage Status](https://coveralls.io/repos/github/shrink0r/suffix-tree/badge.svg?branch=master)](https://coveralls.io/github/shrink0r/suffix-tree?branch=master)
 [![Code Climate](https://codeclimate.com/github/shrink0r/suffix-tree/badges/gpa.svg)][4]
 [![Stories in Ready](https://badge.waffle.io/shrink0r/suffix-tree.png?label=ready&title=Ready)][9]
 [![Total Composer Downloads](https://poser.pugx.org/shrink0r/suffix-tree/d/total.png)][1]
