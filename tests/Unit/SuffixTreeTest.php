@@ -27,6 +27,12 @@ class SuffixTreeTest extends TestCase
         $this->assertFalse($suffix_tree->hasSubstring($substring['false']));
     }
 
+    public function testGetLongestRepetition()
+    {
+        $suffix_tree = $this->tree_builder->build('mississippi$');
+        $this->assertEquals('issi', $suffix_tree->findLongestRepetition(true));
+    }
+
     /**
      * @codeCoverageIgnore
      */
@@ -35,7 +41,7 @@ class SuffixTreeTest extends TestCase
         return [
             [
                 's' => 'mississippi$',
-                'lrs' => 'issi',
+                'lrs' => 'iss',
                 'suffix' => [ 'true' => 'sippi$', 'false' => 'miss$' ],
                 'substring' => [ 'true' => 'iss', 'false' => 'issm' ]
             ],

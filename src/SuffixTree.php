@@ -60,14 +60,6 @@ final class SuffixTree
         return $this->matchSuffixPath($this->getRoot(), $suffix, -1) === 2;
     }
 
-    public function findLongestRepeatedSubstring(): string
-    {
-        $suffixes = $this->dfsLrs($this->getRoot(), 0);
-        asort($suffixes);
-
-var_dump($suffixes);exit;
-    }
-
     /**
      * @param bool $allow_overlap
      *
