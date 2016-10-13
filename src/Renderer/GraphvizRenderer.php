@@ -15,9 +15,9 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
 
     // node styles
     const NODE_PROPS = 'label="%s" fontname="Arial" fontcolor="#000000" color="#7f8c8d"';
-    const LEAF_PROPS = 'shape="circle" width="0.45" fixedsize="true" fontsize="8"';
-    const ROOT_PROPS = 'shape="point" width="0.1" fontsize="0.3" fontsize="8"';
-    const INTERNAL_PROPS = 'shape="circle" width="0.35" fixedsize="true" fontsize="6" fillcolor="#ecf0f1" style="filled"';
+    const LEAF_NODE = 'shape="circle" width="0.45" fixedsize="true" fontsize="8"';
+    const ROOT_NODE = 'shape="point" width="0.1" fontsize="0.3" fontsize="8"';
+    const INTERN_NODE = 'shape="circle" width="0.35" fixedsize="true" fontsize="6" fillcolor="#ecf0f1" style="filled"';
 
     // edge styles
     const BASE_EDGE_PROPS = 'label="%s" fontname="Arial" fontcolor="#000000"';
@@ -96,7 +96,7 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
      */
     private function renderLeafNode(LeafNode $leaf, int $node_id): string
     {
-        return sprintf('%s [ '.self::NODE_PROPS.' '.self::LEAF_PROPS.' ];', $node_id, $leaf->getSuffixIdx());
+        return sprintf('%s [ '.self::NODE_PROPS.' '.self::LEAF_NODE.' ];', $node_id, $leaf->getSuffixIdx());
     }
 
     /**
@@ -106,7 +106,7 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
      */
     private function renderRootNode(int $node_id): string
     {
-        return sprintf('%s [ '.self::NODE_PROPS.' '.self::ROOT_PROPS.' ];', $node_id, 'root');
+        return sprintf('%s [ '.self::NODE_PROPS.' '.self::ROOT_NODE.' ];', $node_id, 'root');
     }
 
     /**
@@ -117,7 +117,7 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
     private function renderInternalNode(InternalNode $node, int $node_id): string
     {
         $label = $node->getMinSuffixIdx().', '.$node->getMaxSuffixIdx();
-        return sprintf('%s [ '.self::NODE_PROPS.' '.self::INTERNAL_PROPS.' ];', $node_id, $label);
+        return sprintf('%s [ '.self::NODE_PROPS.' '.self::INTERN_NODE.' ];', $node_id, $label);
     }
 
     /**
