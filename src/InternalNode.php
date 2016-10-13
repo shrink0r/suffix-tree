@@ -13,12 +13,12 @@ final class InternalNode implements NodeInterface
     /**
      * @param int $start
      * @param int $end
-     * @param array $children
      * @param int $smin
      * @param int $smax
+     * @param array $children
      * @param NodeInterface $suffix_link
      */
-    public function __construct(int $start, int $end, array $children = [], int $smin, int $smax, $suffix_link = null)
+    public function __construct(int $start, int $end, int $smin, int $smax, array $children = [], $suffix_link = null)
     {
         if ($suffix_link !== null && $suffix_link->getSuffixIdx() !== -1) {
             throw new \Exception("Trying to link non-internal/root node.");

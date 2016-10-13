@@ -233,9 +233,9 @@ final class SuffixTreeBuilder implements BuilderInterface
                 $new_node = new Internal(
                     $child_node->start,
                     $child_node->end,
-                    $grand_children,
                     $smin,
                     $smax,
+                    $grand_children,
                     $suffix_node
                 );
                 if ($suffix_node === null && $child_node->suffix_link !== null) {

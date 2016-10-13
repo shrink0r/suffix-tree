@@ -11,7 +11,7 @@ class InternalNodeTest extends TestCase
 
     protected function setUp()
     {
-        $this->internal_node = new InternalNode(3, 5);
+        $this->internal_node = new InternalNode(3, 5, 7, 8);
     }
 
     public function testGetSuffixLink()

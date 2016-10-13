@@ -5,7 +5,7 @@ namespace Shrink0r\SuffixTree\Tests\Unit;
 use Shrink0r\SuffixTree\Builder\SuffixTreeBuilder;
 use Shrink0r\SuffixTree\Tests\Unit\TestCase;
 
-class SuffixTreeTest extends TestCase
+class FlowTest extends TestCase
 {
     private $tree_builder;
 
@@ -17,20 +17,15 @@ class SuffixTreeTest extends TestCase
     /**
      * @dataProvider provideFlowFixtures
      */
-    public function testOverallFlow(string $s, string $lrs, array $suffix, array $substring)
+    public function testOverallFlow(string $s, string $lrs, string $lrs_no, array $suffix, array $substring)
     {
         $suffix_tree = $this->tree_builder->build($s);
-        $this->assertEquals($lrs, $suffix_tree->findLongestRepetition());
+        $this->assertEquals($lrs, $suffix_tree->findLrs());
+        $this->assertEquals($lrs_no, $suffix_tree->findNonOverlappingLrs());
         $this->assertTrue($suffix_tree->hasSuffix($suffix['true']));
         $this->assertFalse($suffix_tree->hasSuffix($suffix['false']));
         $this->assertTrue($suffix_tree->hasSubstring($substring['true']));
         $this->assertFalse($suffix_tree->hasSubstring($substring['false']));
-    }
-
-    public function testGetLongestRepetition()
-    {
-        $suffix_tree = $this->tree_builder->build('mississippi$');
-        $this->assertEquals('issi', $suffix_tree->findLongestRepetition(true));
     }
 
     /**
@@ -41,19 +36,22 @@ class SuffixTreeTest extends TestCase
         return [
             [
                 's' => 'mississippi$',
-                'lrs' => 'iss',
+                'lrs' => 'issi',
+                'lrs_no' => 'ssi',
                 'suffix' => [ 'true' => 'sippi$', 'false' => 'miss$' ],
                 'substring' => [ 'true' => 'iss', 'false' => 'issm' ]
             ],
             [
                 's' => 'GEEKSFORGEEKS$',
                 'lrs' => 'GEEKS',
+                'lrs_no' => 'GEEKS',
                 'suffix' => [ 'true' => 'EKS$', 'false' => 'GE$' ],
                 'substring' => [ 'true' => 'EEK', 'false' => 'SKG' ]
             ],
             [
                 's' => 'xabxac$',
                 'lrs' => 'xa',
+                'lrs_no' => 'xa',
                 'suffix' => [ 'true' => 'ac$', 'false' => 'xa$' ],
                 'substring' => [ 'true' => 'bxa', 'false' => 'cba' ]
             ]
