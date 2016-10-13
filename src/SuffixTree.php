@@ -3,6 +3,7 @@
 namespace Shrink0r\SuffixTree;
 
 use Shrink0r\SuffixTree\InternalNode;
+use Shrink0r\SuffixTree\LeafNode;
 use Shrink0r\SuffixTree\RootNode;
 
 final class SuffixTree
@@ -23,6 +24,10 @@ final class SuffixTree
      * @var string $longest_repetiton
      */
     private $longest_repetiton;
+    /**
+     * @var string[] $suffix_array
+     */
+    private $suffix_array;
 
     /**
      * @param RootNode $root
@@ -55,16 +60,47 @@ final class SuffixTree
         return $this->matchSuffixPath($this->getRoot(), $suffix, -1) === 2;
     }
 
+    public function findLongestRepeatedSubstring(): string
+    {
+        $suffixes = $this->dfsLrs($this->getRoot(), 0);
+        asort($suffixes);
+
+var_dump($suffixes);exit;
+    }
+
     /**
+     * @param bool $allow_overlap
+     *
      * @return string
      */
-    public function findLongestRepetition(): string
+    public function findLongestRepetition($allow_overlap = false): string
     {
         if ($this->longest_repetiton === null) {
-            list($node_depth, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
-            $this->longest_repetiton = substr($this->getS(), $substring_start - 1, $node_depth);
+            list($label_size, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
+            $substring = substr($this->getS(), $substring_start - 1, $label_size);
+            if ($allow_overlap) {
+                $this->longest_repetiton = $substring;
+            } else {
+                $this->longest_repetiton = substr(
+                    $this->getS(),
+                    $substring_start - 1,
+                    min(strlen($substring), abs($label_size - $substring_start - 2))
+                );
+            }
         }
         return $this->longest_repetiton;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSuffixArray(): array
+    {
+        if ($this->suffix_array === null) {
+            $this->suffix_array = $this->dfsSuffixes($this->getRoot(), 0);
+        }
+
+        return $this->suffix_array;
     }
 
     /**
@@ -149,7 +185,10 @@ final class SuffixTree
      */
     private function dfsDeeptestInternalNode(NodeInterface $node, int $path_size, int $max_depth, int $start_pos): array
     {
-        if ($node->getSuffixIdx() === -1) {
+        if ($node instanceof LeafNode && $max_depth < $path_size - $node->getEdgeSize()) {
+            $max_depth = $path_size - $node->getEdgeSize();
+            $start_pos = $node->getSuffixIdx();
+        } else {
             foreach ($node->getChildren() as $child_node) {
                 list($max_depth, $start_pos) = $this->dfsDeeptestInternalNode(
                     $child_node,
@@ -158,11 +197,25 @@ final class SuffixTree
                     $start_pos
                 );
             }
-        } elseif ($node->getSuffixIdx() > -1 && ($max_depth < $path_size - $node->getEdgeSize())) {
-            $max_depth = $path_size - $node->getEdgeSize();
-            $start_pos = $node->getSuffixIdx();
         }
 
         return [ $max_depth, $start_pos ];
+    }
+
+    private function dfsSuffixes(NodeInterface $node, int $path_size, array $suffixes = []): array
+    {
+        if ($node instanceof LeafNode) {
+            $suffixes[$node->getSuffixIdx() - 1] = substr($this->getS(), $node->getSuffixIdx() - 1, $path_size);
+        } else {
+            foreach ($node->getChildren() as $child_node) {
+                $suffixes = $this->dfsSuffixes(
+                    $child_node,
+                    $path_size + $child_node->getEdgeSize(),
+                    $suffixes
+                );
+            }
+        }
+
+        return $suffixes;
     }
 }
