@@ -10,14 +10,20 @@ if (count($argv) < 2) {
     return;
 }
 $suffix_tree = (new SuffixTreeBuilder)->build($argv[1]);
-$longest_repeated_substring = $suffix_tree->findLongestRepetition();
+$lrs = $suffix_tree->findLrs();
+$non_overlapping_lrs = $suffix_tree->findNonOverlappingLrs();
 
 echo "// Input: $argv[1]\n";
 
-if (empty($longest_repeated_substring)) {
+if (empty($lrs)) {
     echo "// No repeated substrings found.\n";
 } else {
-    echo "// Longest repeated substring is: $longest_repeated_substring\n";
+    echo "// Longest repeated substring is: $lrs\n";
+}
+if (empty($non_overlapping_lrs)) {
+    echo "// No repeated(non-overlapping) substrings found.\n";
+} else {
+    echo "// Longest repeated(non-overlapping) substring is: $non_overlapping_lrs\n";
 }
 
 if (count($argv) >= 3) {

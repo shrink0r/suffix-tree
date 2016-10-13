@@ -17,7 +17,7 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
     const NODE_PROPS = 'label="%s" fontname="Arial" fontcolor="#000000" color="#7f8c8d"';
     const LEAF_PROPS = 'shape="circle" width="0.45" fixedsize="true" fontsize="8"';
     const ROOT_PROPS = 'shape="point" width="0.1" fontsize="0.3" fontsize="8"';
-    const INTERNAL_PROPS = 'shape="circle" width="0.2" fillcolor="#ecf0f1" style="filled"';
+    const INTERNAL_PROPS = 'shape="circle" width="0.35" fixedsize="true" fontsize="6" fillcolor="#ecf0f1" style="filled"';
 
     // edge styles
     const BASE_EDGE_PROPS = 'label="%s" fontname="Arial" fontcolor="#000000"';
@@ -65,7 +65,7 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
         } elseif ($node instanceof RootNode) {
             return $this->renderRootNode($node_id);
         }
-        return $this->renderInternalNode($node_id);
+        return $this->renderInternalNode($node, $node_id);
     }
 
     /**
@@ -114,9 +114,10 @@ final class GraphvizRenderer implements SuffixTreeRendererInterface
      *
      * @return string
      */
-    private function renderInternalNode(int $node_id): string
+    private function renderInternalNode(InternalNode $node, int $node_id): string
     {
-        return sprintf('%s [ '.self::NODE_PROPS.' '.self::INTERNAL_PROPS.' ];', $node_id, '');
+        $label = $node->getMinSuffixIdx().', '.$node->getMaxSuffixIdx();
+        return sprintf('%s [ '.self::NODE_PROPS.' '.self::INTERNAL_PROPS.' ];', $node_id, $label);
     }
 
     /**

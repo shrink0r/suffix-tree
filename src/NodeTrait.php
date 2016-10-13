@@ -24,6 +24,14 @@ trait NodeTrait
      * @var int $suffix_idx
      */
     private $suffix_idx;
+    /**
+     * @var int $min_suffix_idx
+     */
+    private $min_suffix_idx;
+    /**
+     * @var int $max_suffix_idx
+     */
+    private $max_suffix_idx;
 
     /**
      * @return int
@@ -47,6 +55,22 @@ trait NodeTrait
     public function getSuffixIdx(): int
     {
         return $this->suffix_idx;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinSuffixIdx(): int
+    {
+        return $this->min_suffix_idx;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxSuffixIdx(): int
+    {
+        return $this->max_suffix_idx;
     }
 
     /**

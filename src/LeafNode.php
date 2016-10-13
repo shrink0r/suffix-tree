@@ -19,6 +19,8 @@ final class LeafNode implements NodeInterface
         $this->start = $start;
         $this->end = $end;
         $this->suffix_idx = $suffix_idx;
+        $this->min_suffix_idx = $suffix_idx;
+        $this->max_suffix_idx = $suffix_idx;
 
         $this->children = [];
         $this->suffix_link = null;

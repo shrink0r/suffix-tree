@@ -21,9 +21,13 @@ final class SuffixTree
      */
     private $length;
     /**
-     * @var string $longest_repetiton
+     * @var string $lrs
      */
-    private $longest_repetiton;
+    private $lrs;
+    /**
+     * @var string $non_overlapping_lrs
+     */
+    private $non_overlapping_lrs;
     /**
      * @var string[] $suffix_array
      */
@@ -61,26 +65,27 @@ final class SuffixTree
     }
 
     /**
-     * @param bool $allow_overlap
-     *
      * @return string
      */
-    public function findLongestRepetition($allow_overlap = false): string
+    public function findNonOverlappingLrs(): string
     {
-        if ($this->longest_repetiton === null) {
-            list($label_size, $substring_start) = $this->dfsDeeptestInternalNode($this->getRoot(), 0, 0, 0);
-            $substring = substr($this->getS(), $substring_start - 1, $label_size);
-            if ($allow_overlap) {
-                $this->longest_repetiton = $substring;
-            } else {
-                $this->longest_repetiton = substr(
-                    $this->getS(),
-                    $substring_start - 1,
-                    min(strlen($substring), abs($label_size - $substring_start - 2))
-                );
-            }
+        if ($this->non_overlapping_lrs === null) {
+            list($start_pos, $length) = $this->dfsLongestRepetition($this->getRoot(), 0, [ 0, 0 ]);
+            $this->non_overlapping_lrs = substr($this->getS(), $start_pos - 1, $length);
         }
-        return $this->longest_repetiton;
+        return $this->non_overlapping_lrs;
+    }
+
+    /**
+     * @return string
+     */
+    public function findLrs(): string
+    {
+        if ($this->lrs === null) {
+            list($start_pos, $length) = $this->dfsLongestRepetition($this->getRoot(), 0, [ 0, 0 ], true);
+            $this->lrs = substr($this->getS(), $start_pos - 1, $length);
+        }
+        return $this->lrs;
     }
 
     /**
@@ -91,7 +96,6 @@ final class SuffixTree
         if ($this->suffix_array === null) {
             $this->suffix_array = $this->dfsSuffixes($this->getRoot(), 0);
         }
-
         return $this->suffix_array;
     }
 
@@ -175,25 +179,37 @@ final class SuffixTree
      *
      * @return int[] int tuple containing max_depth and start_pos
      */
-    private function dfsDeeptestInternalNode(NodeInterface $node, int $path_size, int $max_depth, int $start_pos): array
+    private function dfsLongestRepetition(NodeInterface $node, int $path_size, array $slice, $overlap = false): array
     {
-        if ($node instanceof LeafNode && $max_depth < $path_size - $node->getEdgeSize()) {
-            $max_depth = $path_size - $node->getEdgeSize();
-            $start_pos = $node->getSuffixIdx();
+        if ($node instanceof LeafNode && $slice[1] < $path_size - $node->getEdgeSize()) {
+            $slice = [ $node->getSuffixIdx(), $path_size - $node->getEdgeSize() ];
         } else {
+            $prev_slice = $slice;
             foreach ($node->getChildren() as $child_node) {
-                list($max_depth, $start_pos) = $this->dfsDeeptestInternalNode(
+                $slice = $this->dfsLongestRepetition(
                     $child_node,
                     $path_size + $child_node->getEdgeSize(),
-                    $max_depth,
-                    $start_pos
+                    $slice,
+                    $overlap
                 );
+            }
+            if (!$overlap && $slice[1] > $prev_slice[1] && $node instanceof InternalNode
+                && $path_size > $node->getMaxSuffixIdx() - $node->getMinSuffixIdx()
+            ) { // prevent overlap when not allowed
+                $slice = $prev_slice;
             }
         }
 
-        return [ $max_depth, $start_pos ];
+        return $slice;
     }
 
+    /**
+     * @param  NodeInterface $node
+     * @param  int $path_size
+     * @param  string[] $suffixes
+     *
+     * @return string[]
+     */
     private function dfsSuffixes(NodeInterface $node, int $path_size, array $suffixes = []): array
     {
         if ($node instanceof LeafNode) {

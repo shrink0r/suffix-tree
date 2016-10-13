@@ -3,7 +3,7 @@
 namespace Shrink0r\SuffixTree\Builder;
 
 use Shrink0r\SuffixTree\Builder\NodeTrait;
-use Shrink0r\SuffixTree\NodeInterface;
+use Shrink0r\SuffixTree\Builder\NodeInterface;
 
 final class InternalNode implements NodeInterface
 {

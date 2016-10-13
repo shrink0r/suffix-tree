@@ -30,6 +30,16 @@ interface NodeInterface
     public function getSuffixIdx(): int;
 
     /**
+     * @return int
+     */
+    public function getMinSuffixIdx(): int;
+
+    /**
+     * @return int
+     */
+    public function getMaxSuffixIdx(): int;
+
+    /**
      * @return NodeInterface[]
      */
     public function getChildren(): array;

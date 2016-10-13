@@ -20,5 +20,7 @@ final class RootNode implements NodeInterface
         $this->end = -1;
         $this->suffix_idx = -1;
         $this->suffix_link = null;
+        $this->min_suffix_idx = -1;
+        $this->max_suffix_idx = -1;
     }
 }

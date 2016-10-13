@@ -2,9 +2,9 @@
 
 namespace Shrink0r\SuffixTree\Builder;
 
+use Shrink0r\SuffixTree\Builder\NodeInterface;
 use Shrink0r\SuffixTree\Builder\NodeTrait;
 use Shrink0r\SuffixTree\Builder\SuffixTreeBuilder;
-use Shrink0r\SuffixTree\NodeInterface;
 
 final class LeafNode implements NodeInterface
 {

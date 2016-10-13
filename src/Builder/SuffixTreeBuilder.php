@@ -8,7 +8,7 @@ use Shrink0r\SuffixTree\Builder\LeafNode;
 use Shrink0r\SuffixTree\Builder\RootNode;
 use Shrink0r\SuffixTree\InternalNode as Internal;
 use Shrink0r\SuffixTree\LeafNode as Leaf;
-use Shrink0r\SuffixTree\NodeInterface;
+use Shrink0r\SuffixTree\Builder\SuffixTreeBuilder;
 use Shrink0r\SuffixTree\RootNode as Root;
 use Shrink0r\SuffixTree\SuffixTree;
 
@@ -81,8 +81,9 @@ final class SuffixTreeBuilder implements BuilderInterface
         for ($i = 0; $i < $this->length; $i++) {
             $this->appendSuffix($i);
         }
+        list($children, $smin, $smax) = $this->transferChildren($this->root);
 
-        return new SuffixTree(new Root($this->transferChildren($this->root)), $this->S);
+        return new SuffixTree(new Root($children), $this->S);
     }
 
     /**
@@ -201,41 +202,63 @@ final class SuffixTreeBuilder implements BuilderInterface
         int $path_size = 0
     ): array {
         $children = [];
+        $suffix_min = -1;
+        $suffix_max = $suffix_min;
         foreach ($node->children as $edge => $child_node) {
             if ($child_node instanceof LeafNode) {
-                $children[$edge] = new Leaf(
+                $new_node = new Leaf(
                     $child_node->start,
                     $child_node->end,
                     $this->length - ($path_size + $child_node->getEdgeSize()) + 1
                 );
-                continue;
-            }
-            $grand_children = $this->transferChildren(
-                $child_node,
-                $node_map,
-                $lazy_links,
-                $path_size + $child_node->getEdgeSize()
-            );
-            $children[$edge] = new Internal(
-                $child_node->start,
-                $child_node->end,
-                $grand_children
-            );
-            if ($child_node->suffix_link) {
-                if (isset($node_map[(string)$child_node->suffix_link])) {
-                    $children[$edge]->withSuffixLink($node_map[(string)$child_node->suffix_link]);
+                if ($suffix_min === -1) {
+                    $suffix_min = $new_node->getSuffixIdx();
+                    $suffix_max = $suffix_min;
                 } else {
-                    $lazy_links[(string)$child_node->suffix_link] = $children[$edge];
+                    $suffix_min = min($suffix_min, $new_node->getSuffixIdx());
+                    $suffix_max = max($suffix_max, $new_node->getSuffixIdx());
                 }
+            } else {
+                list($grand_children, $smin, $smax) = $this->transferChildren(
+                    $child_node,
+                    $node_map,
+                    $lazy_links,
+                    $path_size + $child_node->getEdgeSize()
+                );
+                $suffix_node = null;
+                if ($child_node->suffix_link !== null) {
+                    $suffix_hash = (string)$child_node->suffix_link;
+                    $suffix_node = isset($node_map[$suffix_hash]) ? $node_map[$suffix_hash] : null;
+                }
+                $new_node = new Internal(
+                    $child_node->start,
+                    $child_node->end,
+                    $grand_children,
+                    $smin,
+                    $smax,
+                    $suffix_node
+                );
+                if ($suffix_node === null && $child_node->suffix_link !== null) {
+                    $lazy_links[$suffix_hash] = $new_node;
+                }
+                $child_hash = (string)$child_node;
+                if (isset($lazy_links[$child_hash])) {
+                    // todo: find out way to prevent mutating node state here, need to get the new node ref
+                    // into the proper place within the new tree
+                    $lazy_links[$child_hash]->withSuffixLink($new_node);
+                }
+                if ($suffix_min === -1) {
+                    $suffix_min = $new_node->getMinSuffixIdx();
+                    $suffix_max = $new_node->getMaxSuffixIdx();
+                } else {
+                    $suffix_min = min($suffix_min, $new_node->getMinSuffixIdx());
+                    $suffix_max = max($suffix_max, $new_node->getMaxSuffixIdx());
+                }
+                $node_map[$child_hash] = $new_node;
             }
-            if (isset($lazy_links[(string)$child_node])) {
-                // todo: find out way to prevent mutating node state here, need to get the new node ref
-                // into the proper place within the new tree
-                $lazy_links[(string)$child_node]->withSuffixLink($children[$edge]);
-            }
-            $node_map[(string)$child_node] = $children[$edge];
+            $children[$edge] = $new_node;
         }
 
-        return $children;
+        return [ $children, $suffix_min, $suffix_max ];
     }
 }
