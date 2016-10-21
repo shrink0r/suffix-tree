@@ -5,13 +5,6 @@
     "keywords": [ "suffix-tree", "ukkonen" ],
     "homepage": "https://github.com/shrink0r/suffix-tree",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Thorsten Schmitt-Rink",
-            "email": "schmittrink@gmail.com",
-            "role": "Developer"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Shrink0r\\SuffixTree\\": "src/"
@@ -35,9 +28,6 @@
         "psr-4": {
             "Shrink0r\\SuffixTree\\Tests\\": "tests/"
         }
-    },
-    "suggest": {
-        "ext-fileinfo": "to handle mimetype guessing locally"
     },
     "archive": {
         "exclude": [
